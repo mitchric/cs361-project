@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -21,6 +22,36 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+var handlebars = require('express-handlebars').create({defaultLayout:'main'});
+app.engine('handlebars', handlebars.engine);
+app.set('view engine', 'handlebars');
+app.set('port', process.argv[2]);
+
+
+
+app.get('/sign_up', function(req, res, next){
+	var context ={};
+		res.render('sign_up', context);
+ });
+
+
+app.get('/login', function(req, res, next){
+	var context ={};
+		res.render('login', context);
+ });
+
+
+app.get('/search', function(req, res, next){
+	var context ={};
+		res.render('search', context);
+ });
+
+
+app.get('/browse', function(req, res, next){
+	var context ={};
+		res.render('browse', context);
+ });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -39,3 +70,8 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+app.listen(app.get('port'), function(){
+    console.log('Express started on local host!');
+});
+
