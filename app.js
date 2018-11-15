@@ -29,7 +29,7 @@ app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
 
 
-
+//Place holders for the necessary pages
 app.get('/sign_up', function(req, res, next){
 	var context ={};
 		res.render('sign_up', context);
