@@ -23,43 +23,53 @@ app.set('port', process.argv[2]);
 
 
 //Place holders for the necessary pages
-app.get('/sign_up', function(req, res, next){
-	var context ={};
-		res.render('sign_up', context);
+app.get('/', function(req, res, next){
+    var context ={};
+    res.render('login', context);
  });
 
 
 app.get('/login', function(req, res, next){
-	var context ={};
-		res.render('login', context);
+    var context ={};
+    res.render('login', context);
+ });
+
+app.get('/sign_up', function(req, res, next){
+    var context ={};
+    res.render('sign_up', context);
  });
 
 
 app.get('/search', function(req, res, next){
-	var context ={};
-		res.render('search', context);
+    var context ={};
+    res.render('search', context);
  });
 
 
 app.get('/browse', function(req, res, next){
-	var context ={};
-		res.render('browse', context);
+    var context ={};
+    res.render('browse', context);
+ });
+
+app.get('/logout', function(req, res, next){
+    var context ={};
+    res.render('logout', context);
  });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+    next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+  
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;
