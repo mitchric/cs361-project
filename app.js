@@ -103,7 +103,7 @@ app.post('/search', function(req, res, next) {
             return;
         }
         //get and send database data to client
-        res.render('/search-results', {rows: rows});
+        res.render('search-results', {rows: rows});
     });
  });
 
