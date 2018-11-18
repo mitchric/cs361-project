@@ -37,6 +37,17 @@ aws.config.region = 'us-east-1';
 // Load the S3 information from the environment variable
 const S3_BUCKET = "negative-results-in-science";
 
+//global variable to denote either logged-in or logged-out state
+//we may want to move these lines to a script.js file if we end up creating one
+var loggedInState = 0;
+
+function setLoggedInState(state) {
+    loggedInState = state;
+}
+
+function getLoggedInState() {
+    return loggedInState;
+}
 
 //create all page routes
 
@@ -69,6 +80,7 @@ app.get('/reset-papers', function(req, res, next) {
 
             // render the login page
             context.results = "Table reset";
+            context.loggedIn = getLoggedInState();
             res.render('login', context);
         });
     });
@@ -84,15 +96,16 @@ app.get('/reset-users', function(req, res, next) {
         "first_name VARCHAR(255) NOT NULL," +
         "last_name VARCHAR(255) NOT NULL," +
         "email VARCHAR(255) NOT NULL," +
-        "password VARCHAR(255) NOT NULL)";
+        "password VARCHAR(255) NOT NULL," +
+        "type VARCHAR(255) NOT NULL)";
         pool.query(createString, function(err) {
             //insert values into paper
-            pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`) VALUES \
-                        ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123'), \
-                        ('Belinda', 'Knox', 'bknox@standford.edu', 'belinda123'), \
-                        ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123'), \
-                        ('Austin', 'Cross', 'across@msu.edu', 'austin123'), \
-                        ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123')"
+            pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
+                        ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123', 'user'), \
+                        ('Belinda', 'Knox', 'bknox@standford.edu', 'belinda123', 'user'), \
+                        ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123', 'user'), \
+                        ('Austin', 'Cross', 'across@msu.edu', 'austin123', 'user'), \
+                        ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123', 'user')"
             , function(err, result) {
                 if(err) {
                 next(err);
@@ -102,32 +115,65 @@ app.get('/reset-users', function(req, res, next) {
 
             // render the login page
             context.results = "Table reset";
+            context.loggedIn = getLoggedInState();
             res.render('login', context);
         });
     });
 });
 
 app.get('/', function(req, res, next) {
-    var context ={};
+    var context = {};
+    context.loggedIn = getLoggedInState();
     res.render('login', context);
 });
 
 app.get('/login', function(req, res, next) {
-    var context ={};
+    var context = {};
+    context.loggedIn = getLoggedInState();
     res.render('login', context);
 });
 
+app.post('/login-validate', function(req, res, next) {
+    var context = {};
+    pool.query("SELECT * FROM users WHERE email = ? AND password = ?", 
+                [req.body.email, req.body.password], function(err, rows, fields) {
+        if (err) {
+            next(err);
+            return;
+        }
+        
+        context.results = rows;
+        
+        //if no results are returned, user doesn't exist, so tell client to display error
+        if (context.results == undefined || context.results.length == 0) {
+            context.error = true;
+            context.loggedIn = getLoggedInState();
+            res.render('login', context);
+        } else {
+            //otherwise set logged in state to true and render browse page
+            setLoggedInState(1);
+            context.loggedIn = getLoggedInState();
+            context.loggedIn = getLoggedInState();
+            res.render('browse', context);
+        }
+    });
+});
+
 app.get('/sign_up', function(req, res, next) {
-    var context ={};
+    var context = {};
+    context.loggedIn = getLoggedInState();
     res.render('sign_up', context);
 });
 
 app.get('/search', function(req, res, next) {
-    var context ={};
+    var context = {};
+    context.loggedIn = getLoggedInState();
     res.render('search', context);
 });
 
 app.post('/search-results', function(req, res, next) {
+    var context = {};
+
     //get relevant papers to display based on search term
     pool.query("SELECT * FROM papers WHERE title = ? OR author_first = ? OR author_last = ? OR \
                 YEAR(publication_date) = ? OR field = ? ORDER BY title ASC", 
@@ -138,16 +184,21 @@ app.post('/search-results', function(req, res, next) {
             return;
         }
         //send relevant data to client
-        res.render('search_results', {rows: rows});
+        context.loggedIn = getLoggedInState();
+        context.rows = rows;
+        res.render('search_results', context);
     });
 });
 
 app.get('/browse', function(req, res, next) {
-    var context ={};
+    var context = {};
+    context.loggedIn = getLoggedInState();
     res.render('browse', context);
 });
 
 app.post('/browse-specific', function(req, res, next) {
+    var context = {};
+
     //get relevant papers to display
     pool.query("SELECT * FROM papers WHERE field = ? ORDER BY title ASC", [req.body.field], function(err, rows, fields) {
         if (err) {
@@ -155,12 +206,14 @@ app.post('/browse-specific', function(req, res, next) {
             return;
         }
         //send relevant data to client
-        res.render('browse_specific', {rows: rows});
+        context.loggedIn = getLoggedInState();
+        context.rows = rows;
+        res.render('browse_specific', context);
     });
 });
 
 app.get('/browse-all', function(req, res, next) {
-    var context ={};
+    var context = {};
     
     //get relevant papers to display
     pool.query("SELECT * FROM papers ORDER BY title ASC", function(err, rows, fields) {
@@ -169,18 +222,23 @@ app.get('/browse-all', function(req, res, next) {
             return;
         }
         //send relevant data to client
-        res.render('browse_all', {rows: rows});
+        context.loggedIn = getLoggedInState();
+        context.rows = rows;
+        res.render('browse_all', context);
     });
 });
 
 app.get('/logout', function(req, res, next) {
-    var context ={};
+    var context = {};
+    setLoggedInState(0);
+    context.loggedIn = getLoggedInState();
     res.render('logout', context);
 });
 
-app.get('/upload_paper', function(req, res, next){
-    var context ={};
-    res.render('upload_paper', context);
+app.get('/upload-paper', function(req, res, next){
+    var context = {};
+    context.loggedIn = getLoggedInState();
+    res.render('upload-paper', context);
  });
 
 app.get('/upload-paper-s3', (req, res) => {
@@ -211,7 +269,8 @@ app.get('/upload-paper-s3', (req, res) => {
 
 app.post('/save_details', (req, res) => {
     var context = {};
-    res.render('save_details', context);
+    context.loggedIn = getLoggedInState();
+    res.render('save-details', context);
 });
 
 // catch 404 and forward to error handler
