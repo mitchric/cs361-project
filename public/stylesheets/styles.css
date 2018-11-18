@@ -12,6 +12,25 @@ a {
     padding: 50px;
 }
 
+.centered {
+    text-align: center;
+}
+
+.turquoise {
+    background-color: #33b3a6;
+    color: white;
+}
+
+.taller {
+    height: 70px;
+    line-height: 70px;
+}
+
+.gap {
+    margin-bottom: 5%;
+}
+
+/*for log in box*/
 /*source: https://startbootstrap.com/snippets/login/*/
 
 :root {

@@ -6,6 +6,16 @@ var logger = require('morgan');
 
 var app = express();
 
+//mysql setup
+var mysql = require('mysql');
+var pool = mysql.createPool({
+  host  : 'classmysql.engr.oregonstate.edu',
+  user  : 'cs361_mackeyl',
+  password: '1259',
+  database: 'cs361_mackeyl',
+  dateStrings: true
+});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,7 +32,28 @@ app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
 
 
-//Place holders for the necessary pages
+//create all page routes
+
+//create or reset the papers table
+app.get('/reset', function(req, res, next) {
+    var myContext = {};
+
+    pool.query("DROP TABLE IF EXISTS papers", function(err) {
+        var createString = "CREATE TABLE papers(" +
+        "id INT PRIMARY KEY AUTO_INCREMENT," +
+        "title VARCHAR(255) NOT NULL," +
+        "author_first VARCHAR(255) NOT NULL," +
+        "author_last VARCHAR(255) NOT NULL," +
+        "publication_date DATE NOT NULL," +
+        "field VARCHAR(255) NOT NULL)";
+        pool.query(createString, function(err) {
+            myContext.results = "Table reset";
+            // render the login page
+            res.render('login', myContext);
+        });
+    });
+});
+
 app.get('/', function(req, res, next){
     var context ={};
     res.render('login', context);
@@ -75,6 +106,6 @@ app.use(function(err, req, res, next) {
 module.exports = app;
 
 app.listen(app.get('port'), function(){
-    console.log('Express started on local host!');
+    console.log('Express started on localhost:' + app.get('port') + '/');
 });
 
