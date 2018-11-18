@@ -178,7 +178,7 @@ app.get('/upload-paper-s3', (req, res) => {
 
 app.post('/save_details', (req, res) => {
     var context = {};
-    res.render('save-details', context);
+    res.render('save_details', context);
 });
 
 // catch 404 and forward to error handler
