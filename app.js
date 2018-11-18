@@ -47,11 +47,26 @@ app.get('/reset', function(req, res, next) {
         "publication_date DATE NOT NULL," +
         "field VARCHAR(255) NOT NULL)";
         pool.query(createString, function(err) {
-            myContext.results = "Table reset";
+            //insert values into paper
+            pool.query("INSERT INTO papers(`title`, `author_first`, `author_last`, `publication_date`, `field`) VALUES \
+                        ('Air Pollution Not Linked to Respiratory Disease', 'Bob', 'Smith', '2017-01-22 06:14:12', 'Health Sciences'), \
+                        ('The Effects of Drug Decriminilization on Low-Income Neighborhoods', 'Jane', 'Lee', '2014-11-12 16:14:12', 'Social Sciences'), \
+                        ('Bridge Stability in Chronic High-Wind Areas', 'Austin', 'Cross', '2018-09-02 08:58:13', 'Engineering'), \
+                        ('Womb Conditions Not Shown to Impact Bacterial Infection Response', 'Alexa', 'Patel', '2005-04-04 12:54:02', 'Life Sciences')"
+            , function(err, result) {
+                if(err) {
+                next(err);
+                return;
+                }
+            })
+
             // render the login page
+            myContext.results = "Table reset";
             res.render('login', myContext);
         });
     });
+
+
 });
 
 app.get('/', function(req, res, next){
