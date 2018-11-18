@@ -13,6 +13,10 @@ a {
 }
 
 .centered {
+    margin: auto;
+}
+
+.centered-text {
     text-align: center;
 }
 
@@ -27,7 +31,7 @@ a {
 }
 
 .gap {
-    margin-bottom: 5%;
+    margin-bottom: 4%;
 }
 
 /*for log in box*/

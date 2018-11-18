@@ -72,47 +72,47 @@ app.get('/reset', function(req, res, next) {
             res.render('login', context);
         });
     });
-
-
 });
 
 app.get('/', function(req, res, next) {
     var context ={};
     res.render('login', context);
- });
+});
 
 app.get('/login', function(req, res, next) {
     var context ={};
     res.render('login', context);
- });
+});
 
 app.get('/sign_up', function(req, res, next) {
     var context ={};
     res.render('sign_up', context);
- });
+});
 
 app.get('/search', function(req, res, next) {
     var context ={};
     res.render('search', context);
- });
+});
 
-app.post('/search', function(req, res, next) {
-    var context ={};
-       pool.query("SELECT * FROM papers",
-        function(err, rows, fields){
-            if(err){
-                next(err);
-                return;
-            }
-            context.food = rows;
-            res.render('search_results', context);
-        });
- });
+app.post('/search-results', function(req, res, next) {
+    //get relevant papers to display based on search term
+    pool.query("SELECT * FROM papers WHERE title = ? OR author_first = ? OR author_last = ? OR \
+                YEAR(publication_date) = ? OR field = ? ORDER BY title ASC", 
+                [req.body.paperTitle, req.body.firstName, req.body.lastName, req.body.publicationYear, req.body.field]
+                , function(err, rows, fields) {
+        if (err) {
+            next(err);
+            return;
+        }
+        //send relevant data to client
+        res.render('search_results', {rows: rows});
+    });
+});
 
 app.get('/browse', function(req, res, next) {
     var context ={};
     res.render('browse', context);
- });
+});
 
 app.post('/browse-specific', function(req, res, next) {
     //get relevant papers to display
@@ -121,10 +121,10 @@ app.post('/browse-specific', function(req, res, next) {
             next(err);
             return;
         }
-        //get and send database data to client
+        //send relevant data to client
         res.render('browse_specific', {rows: rows});
     });
- });
+});
 
 app.get('/browse-all', function(req, res, next) {
     var context ={};
@@ -135,15 +135,15 @@ app.get('/browse-all', function(req, res, next) {
             next(err);
             return;
         }
-        //get and send database data to client
+        //send relevant data to client
         res.render('browse_all', {rows: rows});
-     });
- });
+    });
+});
 
 app.get('/logout', function(req, res, next) {
     var context ={};
     res.render('logout', context);
- });
+});
 
 app.get('/upload-paper', function(req, res, next){
     var context ={};
