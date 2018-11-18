@@ -5,6 +5,7 @@ Run:
 ```
 npm install
 npm install --save-dev nodemon
+npm install aws-sdk
 node app.js port_number
 ```
 Connect to OSU VPN (this is necessary for database access)

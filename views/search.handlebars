@@ -1,32 +1,35 @@
-<h1>Search</h1>
-
-
-<br>
-<div>
-     <form action="/search" method="post">
-        Paper Title:<br>
-        <input type="text" name="paperTitle">
-        <br><br>
-        First Name:<br>
-        <input type="text" name="firstName">
-        <br><br>
-        Last Name:<br>
-        <input type="text" name="lastName">
-        <br><br>
-        Publication Year:<br>
-        <input type="date" name="publicationYear">
-        <br><br>
-        Field:<br>
-        <select name="field">
-        	<option value="Health Sciences">Health Sciences</option>
-        	<option value="Social Sciences">Psychology</option>
-        	<option value="Engineering">Engineering</option>
-        	<option value="Life Sciences">Life Sciences</option>
-        	<option value="5">Other</option>
-        <br><br><br>
-        Keywords:<br>
-        <select name="field">
-        <br><br>
-        <input type="submit" value="Submit">
-    </form>
+<div class="container">
+    <div class="row">
+        <h1 class="centered gap">Search</h1>
+    </div>
+    <div class="row">
+        <div class="form-group centered">
+            <form action="/search-results" method="post">
+                Paper Title:<br>
+                <input class="form-control" type="text" name="paperTitle">
+                <br>
+                First Name:<br>
+                <input class="form-control" type="text" name="firstName">
+                <br>
+                Last Name:<br>
+                <input class="form-control" type="text" name="lastName">
+                <br>
+                Publication Year:<br>
+                <input class="form-control" type="number" name="publicationYear" min="1900" max="2018" step="1" value="2014">
+                <br>
+                Field:<br>
+                <select class="form-control" name="field">
+                	<option value="Health Sciences">Health Sciences</option>
+                	<option value="Social Sciences">Social Sciences</option>
+                	<option value="Engineering">Engineering</option>
+                	<option value="Life Sciences">Life Sciences</option>
+                	<option value="5">Other</option>
+                <br><br><br>
+                Keywords:<br>
+                <select name="field">
+                <br><br>
+                <input type="submit" value="Submit" class="btn btn-primary btn-block">
+            </form>
+        </div>
+    </div>
 </div>
