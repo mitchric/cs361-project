@@ -178,9 +178,9 @@ app.get('/logout', function(req, res, next) {
     res.render('logout', context);
 });
 
-app.get('/upload-paper', function(req, res, next){
+app.get('/upload_paper', function(req, res, next){
     var context ={};
-    res.render('upload-paper', context);
+    res.render('upload_paper', context);
  });
 
 app.get('/upload-paper-s3', (req, res) => {
