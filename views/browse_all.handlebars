@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <thead class="table-success">
+                <th scope="col">Paper Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Publication Date</th>
+                <th scope="col">Field</th>
+            </thead>
+            <tbody>
+                {{#each rows}}
+                    <tr>
+                        <td>{{this.title}}     
+                        <td>{{this.author_first}} {{this.author_last}}     
+                        <td>{{this.publication_date}}  
+                        <td>{{this.field}}    
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
