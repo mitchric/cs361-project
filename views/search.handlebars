@@ -3,21 +3,29 @@
 
 <br>
 <div>
-     <form action="/search" method="get">
+     <form action="/search" method="post">
         Paper Title:<br>
         <input type="text" name="paperTitle">
-        <br>
+        <br><br>
         First Name:<br>
         <input type="text" name="firstName">
-        <br>
+        <br><br>
         Last Name:<br>
         <input type="text" name="lastName">
-        <br>
+        <br><br>
         Publication Year:<br>
         <input type="number" name="publicationYear">
-        <br>
+        <br><br>
         Field:<br>
-        <input type="text" name="filed">
+        <select name="field">
+        	<option value="1">Health Science</option>
+        	<option value="2">Psychology</option>
+        	<option value="3">Computer Science</option>
+        	<option value="4">Forestry</option>
+        	<option value="5">Other</option>
+        <br><br><br>
+        Keywords:<br>
+        <select name="field">
         <br><br>
         <input type="submit" value="Submit">
     </form>
