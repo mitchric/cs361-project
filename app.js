@@ -235,7 +235,7 @@ app.get('/logout', function(req, res, next) {
     res.render('logout', context);
 });
 
-app.get('/upload-paper', function(req, res, next){
+app.get('/upload_paper', function(req, res, next){
     var context = {};
     context.loggedIn = getLoggedInState();
     res.render('upload_paper', context);
