@@ -35,7 +35,7 @@ app.set('port', process.argv[2]);
 aws.config.region = 'us-east-1';
 
 // Load the S3 information from the environment variable
-const S3_BUCKET = process.env.S3_BUCKET;
+const S3_BUCKET = "negative-results-in-science";
 
 
 //create all page routes
@@ -193,7 +193,7 @@ app.get('/upload-paper-s3', (req, res) => {
         Expires: 60,
         ContentType: fileType,
         ACL: 'public-read'
-    }
+    };
 
     s3.getSignedUrl('putObject', s3Params, (err, data) => {
         if (err){
