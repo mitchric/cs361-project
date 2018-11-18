@@ -8,6 +8,7 @@ npm install --save-dev nodemon
 node app.js port_number
 ```
 Connect to OSU VPN (this is necessary for database access)
+
 Then navigate to localhost:port_number in browser
 
 ## Notes
