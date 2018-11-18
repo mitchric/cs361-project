@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const aws = require('aws-sdk');
 
 var app = express();
 
@@ -30,6 +31,12 @@ var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
+
+// configure the AWS region of the target bucket
+aws.config.region = 'us-east-1';
+
+// Load the S3 information from the environment variable
+const S3_BUCKET = process.env.S3_BUCKET;
 
 
 //create all page routes
@@ -86,6 +93,41 @@ app.get('/logout', function(req, res, next){
     var context ={};
     res.render('logout', context);
  });
+
+app.get('/upload-paper', function(req, res, next){
+    var context ={};
+    res.render('upload-paper', context);
+ });
+
+app.get('/upload-paper-s3', (req, res) => {
+    const s3 = new aws.S3();
+    const fileName = req.query['file-name'];
+    const fileType = req.query['file-type'];
+    const s3Params = {
+        Bucket: S3_BUCKET,
+        Key: fileName,
+        Expires: 60,
+        ContentType: fileType,
+        ACL: 'public-read'
+    }
+
+    s3.getSignedUrl('putObject', s3Params, (err, data) => {
+        if (err){
+            console.log(err);
+            return res.end();
+        }
+        const returnData = {
+            signedRequest: data,
+            url: 'https://${S3_BUCKET}.s3.amazonaws.com/${fileName}'
+        };
+        res.write(JSON.stringify(returnData));
+        res.end();
+    });
+});
+
+app.post('/save-details', (req, res) => {
+    // TODO: Read POSTed form data and do something useful
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
