@@ -97,14 +97,9 @@ app.get('/search', function(req, res, next) {
  });
 
 app.post('/search', function(req, res, next) {
-    pool.query("SELECT * FROM papers WHERE field = ? ORDER BY title ASC", [req.body.field], function(err, rows, fields) {
-        if (err) {
-            next(err);
-            return;
-        }
-        //get and send database data to client
-        res.render('search-results', {rows: rows});
-    });
+   
+    res.render('search-results', {rows: rows});
+   
  });
 
 app.get('/browse', function(req, res, next) {
