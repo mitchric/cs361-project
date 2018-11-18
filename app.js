@@ -193,7 +193,7 @@ app.get('/upload-paper-s3', (req, res) => {
         Expires: 60,
         ContentType: fileType,
         ACL: 'public-read'
-    }
+    };
 
     s3.getSignedUrl('putObject', s3Params, (err, data) => {
         if (err){
