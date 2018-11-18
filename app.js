@@ -102,7 +102,6 @@ app.post('/browse-specific', function(req, res, next) {
             return;
         }
         //get and send database data to client
-        //context.results = JSON.stringify(rows);
         res.render('browse_specific', {rows: rows});
     });
  });
@@ -117,7 +116,6 @@ app.get('/browse-all', function(req, res, next) {
             return;
         }
         //get and send database data to client
-        context.results = JSON.stringify(rows);
         res.render('browse_all', {rows: rows});
      });
  });
