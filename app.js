@@ -97,9 +97,16 @@ app.get('/search', function(req, res, next) {
  });
 
 app.post('/search', function(req, res, next) {
-   
-    res.render('search-results', {rows: rows});
-   
+    var context ={};
+       pool.query("SELECT * FROM papers",
+        function(err, rows, fields){
+            if(err){
+                next(err);
+                return;
+            }
+            context.food = rows;
+            res.render('search_results', context);
+        });
  });
 
 app.get('/browse', function(req, res, next) {
@@ -169,7 +176,7 @@ app.get('/upload-paper-s3', (req, res) => {
     });
 });
 
-app.post('/save-details', (req, res) => {
+app.post('/save_details', (req, res) => {
     // TODO: Read POSTed form data and do something useful
 });
 
