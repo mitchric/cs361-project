@@ -150,7 +150,7 @@ app.get('/upload-paper', function(req, res, next){
     res.render('upload-paper', context);
  });
 
- app.get('/upload-paper-s3', (req, res) => {
+app.get('/upload-paper-s3', (req, res) => {
     const s3 = new aws.S3();
     const fileName = req.query['file-name'];
     const fileType = req.query['file-type'];
@@ -176,7 +176,7 @@ app.get('/upload-paper', function(req, res, next){
     });
 });
 
- app.post('/save_details', (req, res) => {
+app.post('/save_details', (req, res) => {
     // TODO: Read POSTed form data and do something useful
 });
 
