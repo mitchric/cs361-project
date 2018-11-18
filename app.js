@@ -52,7 +52,7 @@ function getLoggedInState() {
 //create all page routes
 
 //create or reset the papers table
-app.get('/reset-papers', function(req, res, next) {
+app.get('/reset_papers', function(req, res, next) {
     var context = {};
 
     pool.query("DROP TABLE IF EXISTS papers", function(err) {
@@ -87,7 +87,7 @@ app.get('/reset-papers', function(req, res, next) {
 });
 
 //create or reset the users table
-app.get('/reset-users', function(req, res, next) {
+app.get('/reset_users', function(req, res, next) {
     var context = {};
 
     pool.query("DROP TABLE IF EXISTS users", function(err) {
@@ -133,7 +133,7 @@ app.get('/login', function(req, res, next) {
     res.render('login', context);
 });
 
-app.post('/login-validate', function(req, res, next) {
+app.post('/login_validate', function(req, res, next) {
     var context = {};
     pool.query("SELECT * FROM users WHERE email = ? AND password = ?", 
                 [req.body.email, req.body.password], function(err, rows, fields) {
@@ -171,7 +171,7 @@ app.get('/search', function(req, res, next) {
     res.render('search', context);
 });
 
-app.post('/search-results', function(req, res, next) {
+app.post('/search_results', function(req, res, next) {
     var context = {};
 
     //get relevant papers to display based on search term
@@ -196,7 +196,7 @@ app.get('/browse', function(req, res, next) {
     res.render('browse', context);
 });
 
-app.post('/browse-specific', function(req, res, next) {
+app.post('/browse_specific', function(req, res, next) {
     var context = {};
 
     //get relevant papers to display
@@ -212,7 +212,7 @@ app.post('/browse-specific', function(req, res, next) {
     });
 });
 
-app.get('/browse-all', function(req, res, next) {
+app.get('/browse_all', function(req, res, next) {
     var context = {};
     
     //get relevant papers to display
@@ -235,10 +235,10 @@ app.get('/logout', function(req, res, next) {
     res.render('logout', context);
 });
 
-app.get('/upload-paper', function(req, res, next){
+app.get('/upload_paper', function(req, res, next){
     var context = {};
     context.loggedIn = getLoggedInState();
-    res.render('upload-paper', context);
+    res.render('upload_paper', context);
  });
 
 app.get('/upload-paper-s3', (req, res) => {
@@ -270,7 +270,7 @@ app.get('/upload-paper-s3', (req, res) => {
 app.post('/save_details', (req, res) => {
     var context = {};
     context.loggedIn = getLoggedInState();
-    res.render('save-details', context);
+    res.render('save_details', context);
 });
 
 // catch 404 and forward to error handler
