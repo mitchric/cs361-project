@@ -177,7 +177,8 @@ app.get('/upload-paper-s3', (req, res) => {
 });
 
 app.post('/save_details', (req, res) => {
-    // TODO: Read POSTed form data and do something useful
+    var context = {};
+    res.render('save-details', context);
 });
 
 // catch 404 and forward to error handler
