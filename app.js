@@ -41,7 +41,7 @@ const S3_BUCKET = process.env.S3_BUCKET;
 //create all page routes
 
 //create or reset the papers table
-app.get('/reset', function(req, res, next) {
+app.get('/reset-papers', function(req, res, next) {
     var context = {};
 
     pool.query("DROP TABLE IF EXISTS papers", function(err) {
@@ -60,6 +60,39 @@ app.get('/reset', function(req, res, next) {
                         ('The Effects of Drug Decriminilization on Low-Income Neighborhoods', 'Jane', 'Lee', '2014-11-12 16:14:12', 'Social Sciences'), \
                         ('Bridge Stability in Chronic High-Wind Areas', 'Austin', 'Cross', '2018-09-02 08:58:13', 'Engineering'), \
                         ('Womb Conditions Not Shown to Impact Bacterial Infection Response', 'Alexa', 'Patel', '2005-04-04 12:54:02', 'Life Sciences')"
+            , function(err, result) {
+                if(err) {
+                next(err);
+                return;
+                }
+            })
+
+            // render the login page
+            context.results = "Table reset";
+            res.render('login', context);
+        });
+    });
+});
+
+//create or reset the users table
+app.get('/reset-users', function(req, res, next) {
+    var context = {};
+
+    pool.query("DROP TABLE IF EXISTS users", function(err) {
+        var createString = "CREATE TABLE users(" +
+        "id INT PRIMARY KEY AUTO_INCREMENT," +
+        "first_name VARCHAR(255) NOT NULL," +
+        "last_name VARCHAR(255) NOT NULL," +
+        "email VARCHAR(255) NOT NULL," +
+        "password VARCHAR(255) NOT NULL)";
+        pool.query(createString, function(err) {
+            //insert values into paper
+            pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`) VALUES \
+                        ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123'), \
+                        ('Belinda', 'Knox', 'bknox@standford.edu', 'belinda123'), \
+                        ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123'), \
+                        ('Austin', 'Cross', 'across@msu.edu', 'austin123'), \
+                        ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123')"
             , function(err, result) {
                 if(err) {
                 next(err);
