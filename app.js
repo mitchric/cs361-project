@@ -3,7 +3,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const aws = require('aws-sdk');
 
 var app = express();
 
@@ -31,11 +30,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
 
-// configure the AWS region of the target bucket
-aws.config.region = 'us-east-1';
 
-// Load the S3 information from the environment variable
-const S3_BUCKET = "negative-results-in-science";
 
 //global variable to denote either logged-in or logged-out state
 //we may want to move these lines to a script.js file if we end up creating one
@@ -240,32 +235,6 @@ app.get('/upload_paper', function(req, res, next){
     context.loggedIn = getLoggedInState();
     res.render('upload_paper', context);
  });
-
-app.get('/upload-paper-s3', (req, res) => {
-    const s3 = new aws.S3();
-    const fileName = req.query['file-name'];
-    const fileType = req.query['file-type'];
-    const s3Params = {
-        Bucket: S3_BUCKET,
-        Key: fileName,
-        Expires: 60,
-        ContentType: fileType,
-        ACL: 'public-read'
-    };
-
-    s3.getSignedUrl('putObject', s3Params, (err, data) => {
-        if (err){
-            console.log(err);
-            return res.end();
-        }
-        const returnData = {
-            signedRequest: data,
-            url: 'https://${S3_BUCKET}.s3.amazonaws.com/${fileName}'
-        };
-        res.write(JSON.stringify(returnData));
-        res.end();
-    });
-});
 
 app.post('/save_details', (req, res) => {
     var context = {};
