@@ -1,4 +1,18 @@
-  <div class="container">
+<script>
+    function validatePassword() {
+        var pass_1_length = document.forms["signUpForm"].pass_1.value.length;
+        var pass_1_val = document.forms["signUpForm"].pass_1.value;
+        var pass_2_length = document.forms["signUpForm"].pass_2.value.length;
+        var pass_2_val = document.forms["signUpForm"].pass_2.value;
+        if (pass_1_length != pass_2_length || pass_1_val != pass_2_val) {
+            alert("Passwords must be the same!");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<div class="container">
     <div class="row">
       <div class="col-lg-10 col-xl-9 mx-auto">
         <div class="card card-signin flex-row my-5">
@@ -7,7 +21,8 @@
           </div>
           <div class="card-body">
             <h5 class="card-title text-center">Register</h5>
-            <form class="form-signin">
+
+            <form method="POST" action="/browse" class="form-signin" name="signUpForm" onSubmit="return validatePassword();">
               <div class="form-label-group">
                 <input type="text" id="inputUserame" class="form-control" placeholder="Username" required autofocus>
                 <label for="inputUserame">Username</label>
@@ -20,13 +35,14 @@
               
               <hr>
 
+              
               <div class="form-label-group">
-                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                <input type="password" id="inputPassword" class="form-control" name="pass_1" placeholder="Password" required>
                 <label for="inputPassword">Password</label>
               </div>
               
               <div class="form-label-group">
-                <input type="password" id="inputConfirmPassword" class="form-control" placeholder="Password" required>
+                <input type="password" id="inputConfirmPassword" class="form-control" name="pass_2" placeholder="Password" required>
                 <label for="inputConfirmPassword">Confirm password</label>
               </div>
 
@@ -56,4 +72,4 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
