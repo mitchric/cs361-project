@@ -6,8 +6,10 @@ var logger = require('morgan');
 
 var app = express();
 
-//mysql setup
+//mysql setup 
 var mysql = require('mysql');
+
+//use this if developing locally
 var pool = mysql.createPool({
     host  : 'classmysql.engr.oregonstate.edu',
     user  : 'cs361_mackeyl',
@@ -15,6 +17,15 @@ var pool = mysql.createPool({
     database: 'cs361_mackeyl',
     dateStrings: true
 });
+
+//use this if deploying to heroku
+// var pool = mysql.createPool({
+//     host  : 'us-cdbr-iron-east-01.cleardb.net',
+//     user  : 'beed262413bedf',
+//     password: '2b3a13c0',
+//     database: 'heroku_30a53d52f9d4d23',
+//     dateStrings: true
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -119,7 +130,7 @@ app.get('/reset_users', function(req, res, next) {
 app.get('/', function(req, res, next) {
     var context = {};
     context.loggedIn = getLoggedInState();
-    res.render('login', context);
+    res.render('welcome', context);
 });
 
 app.get('/login', function(req, res, next) {
@@ -130,6 +141,7 @@ app.get('/login', function(req, res, next) {
 
 app.post('/login_validate', function(req, res, next) {
     var context = {};
+
     pool.query("SELECT * FROM users WHERE email = ? AND password = ?", 
                 [req.body.email, req.body.password], function(err, rows, fields) {
         if (err) {
@@ -144,10 +156,16 @@ app.post('/login_validate', function(req, res, next) {
             context.error = true;
             context.loggedIn = getLoggedInState();
             res.render('login', context);
-        } else {
-            //otherwise set logged in state to true and render browse page
-            setLoggedInState(1);
+        } else if (context.results[0].type != req.body.type) {
+            //if they're trying to log in as the wrong user type, display error
+            context.typeError = true;
             context.loggedIn = getLoggedInState();
+            res.render('login', context);
+        }
+        else {
+            //otherwise set logged in state to true and render browse page
+            console.log(context.results[0].type);
+            setLoggedInState(1);
             context.loggedIn = getLoggedInState();
             res.render('browse', context);
         }
@@ -162,7 +180,7 @@ app.get('/sign_up', function(req, res, next) {
 
 app.post('/sign_up_results', function(req, res, next) {
     var context = {};
-    if (req.body.administrator === "on") {
+    if (req.body.type === "administrator") {
         data = {first_name: req.body.firstName, last_name: req.body.lastName, 
                 email: req.body.email, password : req.body.pass_1, type : "administrator"};
         pool.query('INSERT INTO users SET ?', data, function(err, result) {
@@ -171,7 +189,7 @@ app.post('/sign_up_results', function(req, res, next) {
         setLoggedInState(1);
         context.loggedIn = getLoggedInState();
         res.render('review_papers', context);
-    } else if (req.body.user === "on") {
+    } else if (req.body.type === "user") {
         data = {first_name: req.body.firstName, last_name: req.body.lastName, 
                 email: req.body.email, password : req.body.pass_1, type : "user"};
         pool.query('INSERT INTO users SET ?', data, function(err, result) {

@@ -8,7 +8,7 @@ a {
     color: #00B7FF;
 }
 
-.mainDiv {
+.main-div {
     padding: 50px;
 }
 
@@ -23,6 +23,10 @@ a {
 .turquoise {
     background-color: #33b3a6;
     color: white;
+}
+
+.turquoise-text {
+    color: #33b3a6;
 }
 
 .taller {
