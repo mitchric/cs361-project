@@ -6,8 +6,10 @@ var logger = require('morgan');
 
 var app = express();
 
-//mysql setup
+//mysql setup 
 var mysql = require('mysql');
+
+//use this if developing locally
 // var pool = mysql.createPool({
 //     host  : 'classmysql.engr.oregonstate.edu',
 //     user  : 'cs361_mackeyl',
@@ -16,6 +18,7 @@ var mysql = require('mysql');
 //     dateStrings: true
 // });
 
+//use this if deploying to heroku
 var pool = mysql.createPool({
     host  : 'us-cdbr-iron-east-01.cleardb.net',
     user  : 'beed262413bedf',
