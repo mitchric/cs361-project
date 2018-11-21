@@ -22,10 +22,23 @@
           <div class="card-body">
             <h5 class="card-title text-center">Register</h5>
 
-            <form method="POST" action="/sign_up_type" class="form-signin" name="signUpForm" onSubmit="return validatePassword();">
+            <form method="POST" action="/sign_up_results" class="form-signin" name="signUpForm" onSubmit="return validatePassword();">
+            
               <div class="form-label-group">
-                <input type="text" id="inputUserame" class="form-control" placeholder="Username" required autofocus>
-                <label for="inputUserame">Username</label>
+                <input type="text" id="inputfirstname" class="form-control" name="firstName" placeholder="First Name" required autofocus>
+                <label for="inputfirstname">First Name</label>
+              </div>
+
+              <div class="form-label-group">
+                <input type="text" id="inputlastname" class="form-control" name="lastName" placeholder="Last Name" required autofocus>
+                <label for="inputlastname">Last Name</label>
+              </div>
+
+              <hr>
+           
+              <div class="form-label-group">
+                <input type="text" id="inputuserame" class="form-control" name="userName" placeholder="username" required autofocus>
+                <label for="inputuserame">username</label>
               </div>
 
               <div class="form-label-group">
