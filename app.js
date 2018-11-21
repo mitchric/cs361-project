@@ -8,11 +8,19 @@ var app = express();
 
 //mysql setup
 var mysql = require('mysql');
+// var pool = mysql.createPool({
+//     host  : 'classmysql.engr.oregonstate.edu',
+//     user  : 'cs361_mackeyl',
+//     password: '1259',
+//     database: 'cs361_mackeyl',
+//     dateStrings: true
+// });
+
 var pool = mysql.createPool({
-    host  : 'classmysql.engr.oregonstate.edu',
-    user  : 'cs361_mackeyl',
-    password: '1259',
-    database: 'cs361_mackeyl',
+    host  : 'us-cdbr-iron-east-01.cleardb.net',
+    user  : 'beed262413bedf',
+    password: '2b3a13c0',
+    database: 'heroku_30a53d52f9d4d23',
     dateStrings: true
 });
 
