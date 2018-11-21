@@ -22,14 +22,14 @@
           <div class="card-body">
             <h5 class="card-title text-center">Register</h5>
 
-            <form method="POST" action="/browse" class="form-signin" name="signUpForm" onSubmit="return validatePassword();">
+            <form method="POST" action="/sign_up_type" class="form-signin" name="signUpForm" onSubmit="return validatePassword();">
               <div class="form-label-group">
                 <input type="text" id="inputUserame" class="form-control" placeholder="Username" required autofocus>
                 <label for="inputUserame">Username</label>
               </div>
 
               <div class="form-label-group">
-                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required>
+                <input type="email" id="inputEmail" class="form-control" name="email" placeholder="Email address" required>
                 <label for="inputEmail">Email address</label>
               </div>
               
@@ -49,23 +49,19 @@
               <div class="container">
                 <div class="row">
                   <div class="col-12 text-center">
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                       <label class="btn btn-primary active">
-                         <input type="radio" name="options" id="option1" autocomplete="off" checked> Review
-                       </label>
-                       <label class="btn btn-primary">
-                         <input type="radio" name="options" id="option2" autocomplete="off"> Upload
-                       </label>
-                    </div>
+                    <input type="checkbox" id="administrator" name="administrator" checked>
+                    <label for="administrator">Administrator</label>
+                    <input type="checkbox" id="user" name="user">
+                    <label for="user">User</label>
                   </div>
                 </div>
               </div>
 
                 <hr>
 
-                       
-                      <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Register</button>
-              <hr class="my-4">
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Register</button>
+
+            <hr class="my-4">
               
             </form>
           </div>
