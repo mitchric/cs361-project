@@ -10,22 +10,22 @@ var app = express();
 var mysql = require('mysql');
 
 //use this if developing locally
-var pool = mysql.createPool({
-    host  : 'classmysql.engr.oregonstate.edu',
-    user  : 'cs361_mackeyl',
-    password: '1259',
-    database: 'cs361_mackeyl',
-    dateStrings: true
-});
+//var pool = mysql.createPool({
+//    host  : 'classmysql.engr.oregonstate.edu',
+//    user  : 'cs361_mackeyl',
+//    password: '1259',
+//    database: 'cs361_mackeyl',
+//    dateStrings: true
+//});
 
 //use this if deploying to heroku
-// var pool = mysql.createPool({
-//     host  : 'us-cdbr-iron-east-01.cleardb.net',
-//     user  : 'beed262413bedf',
-//     password: '2b3a13c0',
-//     database: 'heroku_30a53d52f9d4d23',
-//     dateStrings: true
-// });
+var pool = mysql.createPool({
+    host  : 'us-cdbr-iron-east-01.cleardb.net',
+    user  : 'beed262413bedf',
+    password: '2b3a13c0',
+    database: 'heroku_30a53d52f9d4d23',
+    dateStrings: true
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
