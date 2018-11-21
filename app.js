@@ -160,6 +160,29 @@ app.get('/sign_up', function(req, res, next) {
     res.render('sign_up', context);
 });
 
+app.post('/sign_up_results', function(req, res, next) {
+    var context = {};
+    if (req.body.administrator === "on") {
+        data = {first_name: req.body.firstName, last_name: req.body.lastName, 
+                email: req.body.email, password : req.body.pass_1, type : "administrator"};
+        pool.query('INSERT INTO users SET ?', data, function(err, result) {
+        // Error handling should go here
+        });
+        setLoggedInState(1);
+        context.loggedIn = getLoggedInState();
+        res.render('review_papers', context);
+    } else if (req.body.user === "on") {
+        data = {first_name: req.body.firstName, last_name: req.body.lastName, 
+                email: req.body.email, password : req.body.pass_1, type : "user"};
+        pool.query('INSERT INTO users SET ?', data, function(err, result) {
+        // Error handling should go here
+        }); 
+        setLoggedInState(1);
+        context.loggedIn = getLoggedInState();
+        res.render('upload_paper', context);
+    }
+});
+
 app.get('/search', function(req, res, next) {
     var context = {};
     context.loggedIn = getLoggedInState();
@@ -236,10 +259,10 @@ app.get('/upload_paper', function(req, res, next){
     res.render('upload_paper', context);
  });
 
-app.post('/save_details', (req, res) => {
+app.get('/review_papers', function(req, res, next){
     var context = {};
     context.loggedIn = getLoggedInState();
-    res.render('save_details', context);
+    res.render('review_papers', context);
 });
 
 // catch 404 and forward to error handler
