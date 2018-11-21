@@ -1,10 +1,84 @@
-<h1>Sign up place holder</h1>
+<script>
+    function validatePassword() {
+        var pass_1_length = document.forms["signUpForm"].pass_1.value.length;
+        var pass_1_val = document.forms["signUpForm"].pass_1.value;
+        var pass_2_length = document.forms["signUpForm"].pass_2.value.length;
+        var pass_2_val = document.forms["signUpForm"].pass_2.value;
+        if (pass_1_length != pass_2_length || pass_1_val != pass_2_val) {
+            alert("Passwords must be the same!");
+            return false;
+        }
+        return true;
+    }
+</script>
 
+<div class="container">
+    <div class="row">
+      <div class="col-lg-10 col-xl-9 mx-auto">
+        <div class="card card-signin flex-row my-5">
+          <div class="card-img-left d-none d-md-flex">
+             <!-- Background image for card set in CSS! -->
+          </div>
+          <div class="card-body">
+            <h5 class="card-title text-center">Register</h5>
 
-<br>
-<div>
-	Normal User
-</div>
-<div>
-	Admin Sign Up
+            <form method="POST" action="/sign_up_results" class="form-signin" name="signUpForm" onSubmit="return validatePassword();">
+            
+              <div class="form-label-group">
+                <input type="text" id="inputfirstname" class="form-control" name="firstName" placeholder="First Name" required autofocus>
+                <label for="inputfirstname">First Name</label>
+              </div>
+
+              <div class="form-label-group">
+                <input type="text" id="inputlastname" class="form-control" name="lastName" placeholder="Last Name" required autofocus>
+                <label for="inputlastname">Last Name</label>
+              </div>
+
+              <hr>
+           
+              <div class="form-label-group">
+                <input type="text" id="inputuserame" class="form-control" name="userName" placeholder="username" required autofocus>
+                <label for="inputuserame">username</label>
+              </div>
+
+              <div class="form-label-group">
+                <input type="email" id="inputEmail" class="form-control" name="email" placeholder="Email address" required>
+                <label for="inputEmail">Email address</label>
+              </div>
+              
+              <hr>
+
+              
+              <div class="form-label-group">
+                <input type="password" id="inputPassword" class="form-control" name="pass_1" placeholder="Password" required>
+                <label for="inputPassword">Password</label>
+              </div>
+              
+              <div class="form-label-group">
+                <input type="password" id="inputConfirmPassword" class="form-control" name="pass_2" placeholder="Password" required>
+                <label for="inputConfirmPassword">Confirm password</label>
+              </div>
+
+              <div class="container">
+                <div class="row">
+                  <div class="col-12 text-center">
+                    <input type="checkbox" id="administrator" name="administrator" checked>
+                    <label for="administrator">Administrator</label>
+                    <input type="checkbox" id="user" name="user">
+                    <label for="user">User</label>
+                  </div>
+                </div>
+              </div>
+
+                <hr>
+
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Register</button>
+
+            <hr class="my-4">
+              
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
