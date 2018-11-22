@@ -106,7 +106,7 @@ app.get('/reset_users', function(req, res, next) {
             //insert values into paper
             pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
                         ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123', 'user'), \
-                        ('Belinda', 'Knox', 'bknox@standford.edu', 'belinda123', 'user'), \
+                        ('Belinda', 'Knox', 'bknox@stanford.edu', 'belinda123', 'user'), \
                         ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123', 'user'), \
                         ('Austin', 'Cross', 'across@msu.edu', 'austin123', 'user'), \
                         ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123', 'user')"
@@ -164,7 +164,7 @@ app.post('/login_validate', function(req, res, next) {
             //otherwise set logged in state to true and render browse page
             setLoggedInState(1);
             context.loggedIn = getLoggedInState();
-            res.render('browse', context);
+            res.render('upload', context);
         }
     });
 });
@@ -310,21 +310,20 @@ app.post('/save_details', function(req, res, next) {
     var fstream;
     req.pipe(busboy);
     busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-        var saveTo = path.join("files/", path.basename(filename));
+        var saveTo = path.join("public/files/", path.basename(filename));
         fstream = fs.createWriteStream(saveTo);
         file.pipe(fstream);
         fstream.on('close', function () {
-            console.log(path.basename(filename));
             //add the newly updated paper link to the db where the author's last name matches the paper pdf name
             pool.query("UPDATE papers SET `link` = ? WHERE CONCAT(author_last, '.pdf') = ?", 
-            [saveTo, path.basename(filename)],function(err, rows, fields) {
+            ['files/' + path.basename(filename), path.basename(filename)],function(err, rows, fields) {
                 if (err) {
                     next(err);
                     return;
                 }
                 var context = {};
                 context.loggedIn = getLoggedInState();
-                res.render('browse', context);
+                res.render('upload_success', context);
             });
         });
     });
