@@ -16,8 +16,8 @@
                         <td>{{this.author_first}} {{this.author_last}}     
                         <td>{{this.publication_date}}  
                         <td>{{this.field}}    
-                        <td> Download </td>
-                        <td> View </td>
+                        <td><a href={{this.link}} download="{{this.author_last}}.pdf"> Download </a></td>
+                        <td><a href={{this.link}} target="_blank"> View </a></td>
                     </tr>
                 {{/each}}
             </tbody>

@@ -6,6 +6,8 @@
                 <th scope="col">Author</th>
                 <th scope="col">Publication Date</th>
                 <th scope="col">Field</th>
+                <th scope="col">Download</th>
+                <th scope="col">View</th>
             </thead>
             <tbody>
                 {{#each rows}}
@@ -14,9 +16,12 @@
                         <td>{{this.author_first}} {{this.author_last}}     
                         <td>{{this.publication_date}}  
                         <td>{{this.field}}    
+                        <td><a href={{this.link}} download="{{this.author_last}}.pdf"> Download </a></td>
+                        <td><a href={{this.link}} target="_blank"> View </a></td>
                     </tr>
                 {{/each}}
             </tbody>
         </table>
+        <a href="/browse" class="btn btn-primary gap centered">Back to Browse</a>
     </div>
 </div>

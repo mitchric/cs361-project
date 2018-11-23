@@ -3,29 +3,29 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var Busboy = require ('busboy');
+var fs = require('fs');
 
 var app = express();
 
 //mysql setup 
 var mysql = require('mysql');
 
-//use this if developing locally
-var pool = mysql.createPool({
-    host  : 'classmysql.engr.oregonstate.edu',
-    user  : 'cs361_mackeyl',
-    password: '1259',
-    database: 'cs361_mackeyl',
-    dateStrings: true
-});
-
-//use this if deploying to heroku
 // var pool = mysql.createPool({
-//     host  : 'us-cdbr-iron-east-01.cleardb.net',
-//     user  : 'beed262413bedf',
-//     password: '2b3a13c0',
-//     database: 'heroku_30a53d52f9d4d23',
+//     host  : 'classmysql.engr.oregonstate.edu',
+//     user  : 'cs361_mackeyl',
+//     password: '1259',
+//     database: 'cs361_mackeyl',
 //     dateStrings: true
 // });
+
+var pool = mysql.createPool({
+    host  : 'us-cdbr-iron-east-01.cleardb.net',
+    user  : 'beed262413bedf',
+    password: '2b3a13c0',
+    database: 'heroku_30a53d52f9d4d23',
+    dateStrings: true
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,10 +41,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
 
-
-
 //global variable to denote either logged-in or logged-out state
-//we may want to move these lines to a script.js file if we end up creating one
 var loggedInState = 0;
 
 function setLoggedInState(state) {
@@ -68,15 +65,16 @@ app.get('/reset_papers', function(req, res, next) {
         "author_first VARCHAR(255) NOT NULL," +
         "author_last VARCHAR(255) NOT NULL," +
         "publication_date DATE NOT NULL," +
-        "field VARCHAR(255) NOT NULL)";
+        "field VARCHAR(255) NOT NULL," +
+        "link VARCHAR(255) DEFAULT NULL)";
         pool.query(createString, function(err) {
             //insert values into paper
-            pool.query("INSERT INTO papers(`title`, `author_first`, `author_last`, `publication_date`, `field`) VALUES \
-                        ('Air Pollution Not Linked to Respiratory Disease', 'Bob', 'Smith', '2017-01-22 06:14:12', 'Health Sciences'), \
-                        ('Exercise Not Shown to Improve Weight Loss', 'Belinda', 'Knox', '2003-01-31 04:14:34', 'Health Sciences'), \
-                        ('The Effects of Drug Decriminilization on Low-Income Neighborhoods', 'Jane', 'Lee', '2014-11-12 16:14:12', 'Social Sciences'), \
-                        ('Bridge Stability in Chronic High-Wind Areas', 'Austin', 'Cross', '2018-09-02 08:58:13', 'Engineering'), \
-                        ('Womb Conditions Not Shown to Impact Bacterial Infection Response', 'Alexa', 'Patel', '2005-04-04 12:54:02', 'Life Sciences')"
+            pool.query("INSERT INTO papers(`title`, `author_first`, `author_last`, `publication_date`, `field`, `link`) VALUES \
+                        ('Air Pollution Not Linked to Respiratory Disease', 'Bob', 'Smith', '2017-01-22 06:14:12', 'Health Sciences', 'files/Smith.pdf'), \
+                        ('Exercise Not Shown to Improve Weight Loss', 'Belinda', 'Knox', '2003-01-31 04:14:34', 'Health Sciences', 'files/Knox.pdf'), \
+                        ('The Effects of Drug Decriminalization on Low-Income Neighborhoods', 'Jane', 'Lee', '2014-11-12 16:14:12', 'Social Sciences', 'files/Lee.pdf'), \
+                        ('Bridge Stability in Chronic High-Wind Areas', 'Austin', 'Cross', '2018-09-02 08:58:13', 'Engineering', 'files/Cross.pdf'), \
+                        ('Womb Conditions Not Shown to Impact Bacterial Infection Response', 'Alexa', 'Patel', '2005-04-04 12:54:02', 'Life Sciences', 'files/Patel.pdf')"
             , function(err, result) {
                 if(err) {
                 next(err);
@@ -108,7 +106,7 @@ app.get('/reset_users', function(req, res, next) {
             //insert values into paper
             pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
                         ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123', 'user'), \
-                        ('Belinda', 'Knox', 'bknox@standford.edu', 'belinda123', 'user'), \
+                        ('Belinda', 'Knox', 'bknox@stanford.edu', 'belinda123', 'user'), \
                         ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123', 'user'), \
                         ('Austin', 'Cross', 'across@msu.edu', 'austin123', 'user'), \
                         ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123', 'user')"
@@ -164,10 +162,9 @@ app.post('/login_validate', function(req, res, next) {
         }
         else {
             //otherwise set logged in state to true and render browse page
-            console.log(context.results[0].type);
             setLoggedInState(1);
             context.loggedIn = getLoggedInState();
-            res.render('browse', context);
+            res.render('upload', context);
         }
     });
 });
@@ -184,7 +181,10 @@ app.post('/sign_up_results', function(req, res, next) {
         data = {first_name: req.body.firstName, last_name: req.body.lastName, 
                 email: req.body.email, password : req.body.pass_1, type : "administrator"};
         pool.query('INSERT INTO users SET ?', data, function(err, result) {
-        // Error handling should go here
+            if (err) {
+                next(err);
+                return;
+            }
         });
         setLoggedInState(1);
         context.loggedIn = getLoggedInState();
@@ -193,11 +193,14 @@ app.post('/sign_up_results', function(req, res, next) {
         data = {first_name: req.body.firstName, last_name: req.body.lastName, 
                 email: req.body.email, password : req.body.pass_1, type : "user"};
         pool.query('INSERT INTO users SET ?', data, function(err, result) {
-        // Error handling should go here
+            if (err) {
+                next(err);
+                return;
+            }
         }); 
         setLoggedInState(1);
         context.loggedIn = getLoggedInState();
-        res.render('upload_paper', context);
+        res.render('upload', context);
     }
 });
 
@@ -271,11 +274,60 @@ app.get('/logout', function(req, res, next) {
     res.render('logout', context);
 });
 
-app.get('/upload_paper', function(req, res, next){
+//render main upload page
+app.get('/upload', function(req, res, next) {
     var context = {};
     context.loggedIn = getLoggedInState();
-    res.render('upload_paper', context);
- });
+    res.render('upload', context);
+});
+
+//save details about paper into papers db, then render file upload page
+app.post('/upload_file', function(req, res, next) {
+    var context = {};
+        
+    //add data to papers database
+    var data = {title: req.body.paperTitle, author_first: req.body.firstName, author_last: req.body.lastName,
+        publication_date: req.body.publicationDate, field: req.body.field};
+    pool.query('INSERT INTO papers SET ?', data, function(err, result) {
+        if (err) {
+            next(err);
+            return;
+        }
+    }); 
+    context.loggedIn = getLoggedInState();
+    res.render('upload_file', context);
+});
+
+//upload pdf to files directory and then update the database accordingly
+//this is very hacky - we should update if we have time
+//right now, the pdf you upload needs to be in the format author_last_name.pdf and no authors can have the same last name
+app.post('/save_details', function(req, res, next) {
+    //source: https://stackoverflow.com/questions/29985950/how-to-stop-upload-and-redirect-in-busboy-if-mime-type-is-invalid
+    var busboy = new Busboy ({
+        headers: req.headers
+    });
+
+    var fstream;
+    req.pipe(busboy);
+    busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+        var saveTo = path.join("public/files/", path.basename(filename));
+        fstream = fs.createWriteStream(saveTo);
+        file.pipe(fstream);
+        fstream.on('close', function () {
+            //add the newly updated paper link to the db where the author's last name matches the paper pdf name
+            pool.query("UPDATE papers SET `link` = ? WHERE CONCAT(author_last, '.pdf') = ?", 
+            ['files/' + path.basename(filename), path.basename(filename)],function(err, rows, fields) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                var context = {};
+                context.loggedIn = getLoggedInState();
+                res.render('upload_success', context);
+            });
+        });
+    });
+});
 
 app.get('/review_papers', function(req, res, next){
     var context = {};

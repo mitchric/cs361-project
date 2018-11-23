@@ -1,0 +1,43 @@
+<div class="container">
+    <div class="row col-sm-6 col-md-6 col-lg-6 centered">
+        <h2>Upload Your Paper</h2>
+
+        <form class="form-signin" action="/upload_file" method="post">
+            <div class="form-label-group">
+                <input type="text" id="inputTitle" name="paperTitle" class="form-control" required autofocus>
+                <label for="inputTitle">Paper Title</label>
+            </div>
+            
+            <div class="form-label-group">
+                <input type="text" id="inputFirst" name="firstName" class="form-control" required>
+                <label for="inputFirst">First Name</label>
+            </div>
+
+            <div class="form-label-group">
+                <input type="text" id="inputLast" name="lastName" class="form-control" required>
+                <label for="inputLast">Last Name</label>
+            </div>
+
+            <div class="form-label-group">
+                <input type="date" id="inputDate" name="publicationDate" class="form-control" required>
+                <label for="inputDate">Publication Date</label>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Field</label>
+                </div>
+                <select class="custom-select" id="inputGroupSelect01" name="field">
+                    <option value="Health Sciences">Health Sciences</option>
+                    <option value="Social Sciences">Social Sciences</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Life Sciences">Life Sciences</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>            
+            
+            <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Next</button>
+            <hr class="my-4">
+        </form>
+    </div>
+</div>
