@@ -94,7 +94,7 @@ app.get('/reset_papers', function(req, res, next) {
 //create or reset the users table
 app.get('/reset_users', function(req, res, next) {
     var context = {};
-
+    var saltRounds = 12;
     pool.query("DROP TABLE IF EXISTS users", function(err) {
         var createString = "CREATE TABLE users(" +
         "id INT PRIMARY KEY AUTO_INCREMENT," +
@@ -106,11 +106,11 @@ app.get('/reset_users', function(req, res, next) {
         pool.query(createString, function(err) {
             //insert values into paper
             pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
-                        ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123', 'user'), \
-                        ('Belinda', 'Knox', 'bknox@stanford.edu', 'belinda123', 'user'), \
-                        ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123', 'user'), \
-                        ('Austin', 'Cross', 'across@msu.edu', 'austin123', 'user'), \
-                        ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123', 'user')"
+                        ('Bob', 'Smith', 'bsmith@princeton.edu', '"+bcrypt.hashSync('bob123', saltRounds)+"', 'user'), \
+                        ('Belinda', 'Knox', 'bknox@stanford.edu', '"+bcrypt.hashSync('belinda123', saltRounds)+"', 'user'), \
+                        ('Jane', 'Lee', 'jlee@oregonstate.edu', '"+bcrypt.hashSync('jane123', saltRounds)+"', 'user'), \
+                        ('Austin', 'Cross', 'across@msu.edu', '"+bcrypt.hashSync('austin123', saltRounds)+"', 'user'), \
+                        ('Alexa', 'Patel', 'apatel@lse.edu', '"+bcrypt.hashSync('alexa123', saltRounds)+"', 'user')"
             , function(err, result) {
                 if(err) {
                 next(err);
