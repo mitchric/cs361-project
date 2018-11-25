@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var Busboy = require ('busboy');
 var fs = require('fs');
+var bcrypt = require('bcrypt');
 
 var app = express();
 
@@ -140,8 +141,8 @@ app.get('/login', function(req, res, next) {
 app.post('/login_validate', function(req, res, next) {
     var context = {};
 
-    pool.query("SELECT * FROM users WHERE email = ? AND password = ?", 
-                [req.body.email, req.body.password], function(err, rows, fields) {
+    pool.query("SELECT * FROM users WHERE email = ?",
+                [req.body.email], function(err, rows, fields) {
         if (err) {
             next(err);
             return;
@@ -162,9 +163,16 @@ app.post('/login_validate', function(req, res, next) {
         }
         else {
             //otherwise set logged in state to true and render browse page
-            setLoggedInState(1);
-            context.loggedIn = getLoggedInState();
-            res.render('upload', context);
+            bcrypt.compare(req.body.password, context.results[0].password, function (err, result) {
+                if (result == true) {
+                    setLoggedInState(1);
+                    context.loggedIn = getLoggedInState();
+                    res.render('upload', context);
+                } else {
+                    res.send('Incorrect password');
+                    res.redirect('/');
+                }
+            });
         }
     });
 });
@@ -177,27 +185,35 @@ app.get('/sign_up', function(req, res, next) {
 
 app.post('/sign_up_results', function(req, res, next) {
     var context = {};
+    var saltRounds = 12;
+
     if (req.body.type === "administrator") {
-        data = {first_name: req.body.firstName, last_name: req.body.lastName, 
-                email: req.body.email, password : req.body.pass_1, type : "administrator"};
-        pool.query('INSERT INTO users SET ?', data, function(err, result) {
-            if (err) {
-                next(err);
-                return;
-            }
+        bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
+            data = {
+                first_name: req.body.firstName, last_name: req.body.lastName,
+                email: req.body.email, password: hash, type: "administrator"
+            };
+            pool.query('INSERT INTO users SET ?', data, function(err, result) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+            });
         });
         setLoggedInState(1);
         context.loggedIn = getLoggedInState();
         res.render('sign_up_success', context);
     } else if (req.body.type === "user") {
-        data = {first_name: req.body.firstName, last_name: req.body.lastName, 
-                email: req.body.email, password : req.body.pass_1, type : "user"};
-        pool.query('INSERT INTO users SET ?', data, function(err, result) {
-            if (err) {
-                next(err);
-                return;
-            }
-        }); 
+        bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
+            data = {first_name: req.body.firstName, last_name: req.body.lastName,
+                email: req.body.email, password : hash, type : "user"};
+            pool.query('INSERT INTO users SET ?', data, function(err, result) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+            });
+        });
         setLoggedInState(1);
         context.loggedIn = getLoggedInState();
         res.render('sign_up_success_user', context);
