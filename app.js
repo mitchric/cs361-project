@@ -188,7 +188,7 @@ app.post('/sign_up_results', function(req, res, next) {
         });
         setLoggedInState(1);
         context.loggedIn = getLoggedInState();
-        res.render('review_papers', context);
+        res.render('sign_up_success', context);
     } else if (req.body.type === "user") {
         data = {first_name: req.body.firstName, last_name: req.body.lastName, 
                 email: req.body.email, password : req.body.pass_1, type : "user"};
@@ -200,7 +200,7 @@ app.post('/sign_up_results', function(req, res, next) {
         }); 
         setLoggedInState(1);
         context.loggedIn = getLoggedInState();
-        res.render('upload', context);
+        res.render('sign_up_success_user', context);
     }
 });
 
