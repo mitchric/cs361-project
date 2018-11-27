@@ -241,7 +241,14 @@ app.post('/search_results', function(req, res, next) {
         //send relevant data to client
         context.loggedIn = getLoggedInState();
         context.rows = rows;
-        res.render('search_results', context);
+        if(context.rows.length > 0){
+            res.render('search_results', context);        
+        }
+        else{
+
+            res.render('no_results', context);
+        }
+
     });
 });
 
