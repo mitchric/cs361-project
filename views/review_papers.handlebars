@@ -1,1 +1,34 @@
-<h1>Review Papers</h1>
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <thead class="table-success">
+                <th scope="col">Paper Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Publication Date</th>
+                <th scope="col">Field</th>
+                <th scope="col">Download</th>
+                <th scope="col">View</th>
+                <th scope="col">Approve</th>
+                <th scope="col">Reject</th>
+                <th scope="col">Awaiting Review</th>
+            </thead>
+            <tbody>
+                {{#each rows}}
+                    <tr>
+                        <td>{{this.title}}     
+                        <td>{{this.author_first}} {{this.author_last}}     
+                        <td>{{this.publication_date}}  
+                        <td>{{this.field}}    
+                        <td><a href={{this.link}} download="{{this.author_last}}.pdf"> Download </a></td>
+                        <td><a href={{this.link}} target="_blank"> View </a></td>
+                        <td><input type="radio" name="approvalStatus" value="approved"></td>
+                        <td><input type="radio" name="approvalStatus" value="notApproved"></td>
+                        <td><input type="radio" name="reviewStatus" value="notReviewed" checked></td>
+                        <td><input type="hidden" name="paperTitle" value="notApproved"></td
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <a href="/browse" class="btn btn-primary gap centered">Back to Browse</a>
+    </div>
+</div>
