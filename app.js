@@ -12,14 +12,15 @@ var app = express();
 //mysql setup 
 var mysql = require('mysql');
 
-// var pool = mysql.createPool({
-//     host  : 'classmysql.engr.oregonstate.edu',
-//     user  : 'cs361_mackeyl',
-//     password: '1259',
-//     database: 'cs361_mackeyl',
-//     dateStrings: true
-// });
+var pool = mysql.createPool({
+     host  : 'classmysql.engr.oregonstate.edu',
+     user  : 'cs361_mackeyl',
+     password: '1259',
+     database: 'cs361_mackeyl',
+     dateStrings: true
+});
 
+/*
 var pool = mysql.createPool({
     host  : 'us-cdbr-iron-east-01.cleardb.net',
     user  : 'beed262413bedf',
@@ -27,6 +28,7 @@ var pool = mysql.createPool({
     database: 'heroku_30a53d52f9d4d23',
     dateStrings: true
 });
+*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -67,15 +69,16 @@ app.get('/reset_papers', function(req, res, next) {
         "author_last VARCHAR(255) NOT NULL," +
         "publication_date DATE NOT NULL," +
         "field VARCHAR(255) NOT NULL," +
-        "link VARCHAR(255) DEFAULT NULL)";
+        "link VARCHAR(255) DEFAULT NULL," +
+        "approval_status VARCHAR(255) NOT NULL)";
         pool.query(createString, function(err) {
             //insert values into paper
-            pool.query("INSERT INTO papers(`title`, `author_first`, `author_last`, `publication_date`, `field`, `link`) VALUES \
-                        ('Air Pollution Not Linked to Respiratory Disease', 'Bob', 'Smith', '2017-01-22 06:14:12', 'Health Sciences', 'files/Smith.pdf'), \
-                        ('Exercise Not Shown to Improve Weight Loss', 'Belinda', 'Knox', '2003-01-31 04:14:34', 'Health Sciences', 'files/Knox.pdf'), \
-                        ('The Effects of Drug Decriminalization on Low-Income Neighborhoods', 'Jane', 'Lee', '2014-11-12 16:14:12', 'Social Sciences', 'files/Lee.pdf'), \
-                        ('Bridge Stability in Chronic High-Wind Areas', 'Austin', 'Cross', '2018-09-02 08:58:13', 'Engineering', 'files/Cross.pdf'), \
-                        ('Womb Conditions Not Shown to Impact Bacterial Infection Response', 'Alexa', 'Patel', '2005-04-04 12:54:02', 'Life Sciences', 'files/Patel.pdf')"
+            pool.query("INSERT INTO papers(`title`, `author_first`, `author_last`, `publication_date`, `field`, `link`, `approval_status`) VALUES \
+                        ('Air Pollution Not Linked to Respiratory Disease', 'Bob', 'Smith', '2017-01-22 06:14:12', 'Health Sciences', 'files/Smith.pdf', 'approved'), \
+                        ('Exercise Not Shown to Improve Weight Loss', 'Belinda', 'Knox', '2003-01-31 04:14:34', 'Health Sciences', 'files/Knox.pdf', 'approved'), \
+                        ('The Effects of Drug Decriminalization on Low-Income Neighborhoods', 'Jane', 'Lee', '2014-11-12 16:14:12', 'Social Sciences', 'files/Lee.pdf', 'approved'), \
+                        ('Bridge Stability in Chronic High-Wind Areas', 'Austin', 'Cross', '2018-09-02 08:58:13', 'Engineering', 'files/Cross.pdf', 'approved'), \
+                        ('Womb Conditions Not Shown to Impact Bacterial Infection Response', 'Alexa', 'Patel', '2005-04-04 12:54:02', 'Life Sciences', 'files/Patel.pdf', 'approved')"
             , function(err, result) {
                 if(err) {
                 next(err);
@@ -278,7 +281,7 @@ app.get('/browse_all', function(req, res, next) {
     var context = {};
     
     //get relevant papers to display
-    pool.query("SELECT * FROM papers ORDER BY title ASC", function(err, rows, fields) {
+    pool.query("SELECT * FROM papers WHERE approval_status = ? ORDER BY title ASC", ["approved"], function(err, rows, fields) {
         if (err) {
             next(err);
             return;
