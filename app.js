@@ -26,7 +26,8 @@ var pool = mysql.createPool({
     user  : 'beed262413bedf',
     password: '2b3a13c0',
     database: 'heroku_30a53d52f9d4d23',
-    dateStrings: true
+    dateStrings: true,
+    multipleStatements: true
 });
 
 // view engine setup
