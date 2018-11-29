@@ -12,16 +12,15 @@ var app = express();
 //mysql setup 
 var mysql = require('mysql');
 
-var pool = mysql.createPool({
-     host  : 'classmysql.engr.oregonstate.edu',
-     user  : 'cs361_mackeyl',
-     password: '1259',
-     database: 'cs361_mackeyl',
-     dateStrings: true,
-     multipleStatements: true
-});
+// var pool = mysql.createPool({
+//      host  : 'classmysql.engr.oregonstate.edu',
+//      user  : 'cs361_mackeyl',
+//      password: '1259',
+//      database: 'cs361_mackeyl',
+//      dateStrings: true,
+//      multipleStatements: true
+// });
 
-/*
 var pool = mysql.createPool({
     host  : 'us-cdbr-iron-east-01.cleardb.net',
     user  : 'beed262413bedf',
@@ -29,7 +28,6 @@ var pool = mysql.createPool({
     database: 'heroku_30a53d52f9d4d23',
     dateStrings: true
 });
-*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -54,6 +52,13 @@ function setLoggedInState(state) {
 
 function getLoggedInState() {
     return loggedInState;
+}
+
+function checkAnd(num_parameters) {
+    if (num_parameters > 0) {
+        return 1;
+    }
+    return 0;
 }
 
 //create all page routes
@@ -109,12 +114,18 @@ app.get('/reset_users', function(req, res, next) {
         "type VARCHAR(255) NOT NULL)";
         pool.query(createString, function(err) {
             //insert values into paper
+            // pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
+            //             ('Bob', 'Smith', 'bsmith@princeton.edu', '"+bcrypt.hashSync('bob123', saltRounds)+"', 'user'), \
+            //             ('Belinda', 'Knox', 'bknox@stanford.edu', '"+bcrypt.hashSync('belinda123', saltRounds)+"', 'user'), \
+            //             ('Jane', 'Lee', 'jlee@oregonstate.edu', '"+bcrypt.hashSync('jane123', saltRounds)+"', 'user'), \
+            //             ('Austin', 'Cross', 'across@msu.edu', '"+bcrypt.hashSync('austin123', saltRounds)+"', 'user'), \
+            //             ('Alexa', 'Patel', 'apatel@lse.edu', '"+bcrypt.hashSync('alexa123', saltRounds)+"', 'user')"
             pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
-                        ('Bob', 'Smith', 'bsmith@princeton.edu', '"+bcrypt.hashSync('bob123', saltRounds)+"', 'user'), \
-                        ('Belinda', 'Knox', 'bknox@stanford.edu', '"+bcrypt.hashSync('belinda123', saltRounds)+"', 'user'), \
-                        ('Jane', 'Lee', 'jlee@oregonstate.edu', '"+bcrypt.hashSync('jane123', saltRounds)+"', 'user'), \
-                        ('Austin', 'Cross', 'across@msu.edu', '"+bcrypt.hashSync('austin123', saltRounds)+"', 'user'), \
-                        ('Alexa', 'Patel', 'apatel@lse.edu', '"+bcrypt.hashSync('alexa123', saltRounds)+"', 'user')"
+                        ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123', 'user'), \
+                        ('Belinda', 'Knox', 'bknox@stanford.edu', 'belinda123', 'user'), \
+                        ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123', 'user'), \
+                        ('Austin', 'Cross', 'across@msu.edu', 'austin123', 'user'), \
+                        ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123', 'user')"
             , function(err, result) {
                 if(err) {
                 next(err);
@@ -164,20 +175,24 @@ app.post('/login_validate', function(req, res, next) {
             context.typeError = true;
             context.loggedIn = getLoggedInState();
             res.render('login', context);
+        } else {
+            setLoggedInState(1);
+            context.loggedIn = getLoggedInState();
+            res.render('upload', context);
         }
-        else {
-            //otherwise set logged in state to true and render browse page
-            bcrypt.compare(req.body.password, context.results[0].password, function (err, result) {
-                if (result == true) {
-                    setLoggedInState(1);
-                    context.loggedIn = getLoggedInState();
-                    res.render('upload', context);
-                } else {
-                    res.send('Incorrect password');
-                    res.redirect('/');
-                }
-            });
-        }
+        // else {
+        //     //otherwise set logged in state to true and render browse page
+        //     bcrypt.compare(req.body.password, context.results[0].password, function (err, result) {
+        //         if (result == true) {
+        //             setLoggedInState(1);
+        //             context.loggedIn = getLoggedInState();
+        //             res.render('upload', context);
+        //         } else {
+        //             res.send('Incorrect password');
+        //             res.redirect('/');
+        //         }
+        //     });
+        //}
     });
 });
 
@@ -189,39 +204,50 @@ app.get('/sign_up', function(req, res, next) {
 
 app.post('/sign_up_results', function(req, res, next) {
     var context = {};
-    var saltRounds = 12;
+    // var saltRounds = 12;
 
-    if (req.body.type === "administrator") {
-        bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
-            data = {
-                first_name: req.body.firstName, last_name: req.body.lastName,
-                email: req.body.email, password: hash, type: "administrator"
-            };
-            pool.query('INSERT INTO users SET ?', data, function(err, result) {
-                if (err) {
-                    next(err);
-                    return;
-                }
-            });
-        });
-        setLoggedInState(1);
-        context.loggedIn = getLoggedInState();
-        res.render('sign_up_success', context);
-    } else if (req.body.type === "user") {
-        bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
-            data = {first_name: req.body.firstName, last_name: req.body.lastName,
-                email: req.body.email, password : hash, type : "user"};
-            pool.query('INSERT INTO users SET ?', data, function(err, result) {
-                if (err) {
-                    next(err);
-                    return;
-                }
-            });
-        });
-        setLoggedInState(1);
-        context.loggedIn = getLoggedInState();
-        res.render('sign_up_success_user', context);
-    }
+    // if (req.body.type === "administrator") {
+    //     bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
+    //         data = {
+    //             first_name: req.body.firstName, last_name: req.body.lastName,
+    //             email: req.body.email, password: hash, type: "administrator"
+    //         };
+    //         pool.query('INSERT INTO users SET ?', data, function(err, result) {
+    //             if (err) {
+    //                 next(err);
+    //                 return;
+    //             }
+    //         });
+    //     });
+    //     setLoggedInState(1);
+    //     context.loggedIn = getLoggedInState();
+    //     res.render('sign_up_success', context);
+    // } else if (req.body.type === "user") {
+    //     bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
+    //         data = {first_name: req.body.firstName, last_name: req.body.lastName,
+    //             email: req.body.email, password : hash, type : "user"};
+    //         pool.query('INSERT INTO users SET ?', data, function(err, result) {
+    //             if (err) {
+    //                 next(err);
+    //                 return;
+    //             }
+    //         });
+    //     });
+
+    data = {
+        first_name: req.body.firstName, last_name: req.body.lastName,
+        email: req.body.email, password: req.body.pass_1, type: req.body.type
+    };
+
+    pool.query('INSERT INTO users SET ?', data, function(err, result) {
+        if (err) {
+            next(err);
+            return;
+        }
+    });
+    setLoggedInState(1);
+    context.loggedIn = getLoggedInState();
+    res.render('sign_up_success_user', context);
 });
 
 app.get('/search', function(req, res, next) {
@@ -233,11 +259,60 @@ app.get('/search', function(req, res, next) {
 app.post('/search_results', function(req, res, next) {
     var context = {};
 
-    //get relevant papers to display based on search term
-    pool.query("SELECT * FROM papers WHERE title = ? OR author_first = ? OR author_last = ? OR \
-                YEAR(publication_date) = ? OR field = ? ORDER BY title ASC", 
-                [req.body.paperTitle, req.body.firstName, req.body.lastName, req.body.publicationYear, req.body.field]
-                , function(err, rows, fields) {
+    var statement = "SELECT * FROM papers WHERE";
+    var parameters = [];
+    var num_parameters = 0;
+
+    if (req.body.paperTitle) {
+        statement += " title = ?";
+        parameters.push(req.body.paperTitle);
+        num_parameters++;
+    }
+
+    if (req.body.firstName) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND author_first = ?";    
+        } else {
+            statement += " author_first = ?";
+        }        
+        parameters.push(req.body.firstName);
+        num_parameters++;
+    }
+
+    if (req.body.lastName) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND author_last = ?";    
+        } else {
+            statement += " author_last = ?";
+        }        
+        parameters.push(req.body.lastName);
+        num_parameters++;
+    }
+
+    if (req.body.publicationYear) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND YEAR(publication_date) = ?";    
+        } else {
+            statement += " YEAR(publication_date) = ?";
+        }        
+        parameters.push(req.body.publicationYear);
+        num_parameters++;
+    }
+    
+    if (req.body.field) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND field = ?";    
+        } else {
+            statement += " field = ?";
+        }        
+        parameters.push(req.body.field);
+        num_parameters++;
+    }
+
+
+    statement += " ORDER BY title asc";
+
+    pool.query(statement, parameters, function(err, rows, fields) {
         if (err) {
             next(err);
             return;
@@ -249,10 +324,8 @@ app.post('/search_results', function(req, res, next) {
             res.render('search_results', context);        
         }
         else{
-
             res.render('no_results', context);
         }
-
     });
 });
 
@@ -326,7 +399,6 @@ app.post('/upload_file', function(req, res, next) {
 });
 
 //upload pdf to files directory and then update the database accordingly
-//this is very hacky - we should update if we have time
 //right now, the pdf you upload needs to be in the format author_last_name.pdf and no authors can have the same last name
 app.post('/save_details', function(req, res, next) {
     //source: https://stackoverflow.com/questions/29985950/how-to-stop-upload-and-redirect-in-busboy-if-mime-type-is-invalid
