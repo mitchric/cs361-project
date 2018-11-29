@@ -114,12 +114,18 @@ app.get('/reset_users', function(req, res, next) {
         "type VARCHAR(255) NOT NULL)";
         pool.query(createString, function(err) {
             //insert values into paper
+            // pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
+            //             ('Bob', 'Smith', 'bsmith@princeton.edu', '"+bcrypt.hashSync('bob123', saltRounds)+"', 'user'), \
+            //             ('Belinda', 'Knox', 'bknox@stanford.edu', '"+bcrypt.hashSync('belinda123', saltRounds)+"', 'user'), \
+            //             ('Jane', 'Lee', 'jlee@oregonstate.edu', '"+bcrypt.hashSync('jane123', saltRounds)+"', 'user'), \
+            //             ('Austin', 'Cross', 'across@msu.edu', '"+bcrypt.hashSync('austin123', saltRounds)+"', 'user'), \
+            //             ('Alexa', 'Patel', 'apatel@lse.edu', '"+bcrypt.hashSync('alexa123', saltRounds)+"', 'user')"
             pool.query("INSERT INTO users(`first_name`, `last_name`, `email`, `password`, `type`) VALUES \
-                        ('Bob', 'Smith', 'bsmith@princeton.edu', '"+bcrypt.hashSync('bob123', saltRounds)+"', 'user'), \
-                        ('Belinda', 'Knox', 'bknox@stanford.edu', '"+bcrypt.hashSync('belinda123', saltRounds)+"', 'user'), \
-                        ('Jane', 'Lee', 'jlee@oregonstate.edu', '"+bcrypt.hashSync('jane123', saltRounds)+"', 'user'), \
-                        ('Austin', 'Cross', 'across@msu.edu', '"+bcrypt.hashSync('austin123', saltRounds)+"', 'user'), \
-                        ('Alexa', 'Patel', 'apatel@lse.edu', '"+bcrypt.hashSync('alexa123', saltRounds)+"', 'user')"
+                        ('Bob', 'Smith', 'bsmith@princeton.edu', 'bob123', 'user'), \
+                        ('Belinda', 'Knox', 'bknox@stanford.edu', 'belinda123', 'user'), \
+                        ('Jane', 'Lee', 'jlee@oregonstate.edu', 'jane123', 'user'), \
+                        ('Austin', 'Cross', 'across@msu.edu', 'austin123', 'user'), \
+                        ('Alexa', 'Patel', 'apatel@lse.edu', 'alexa123', 'user')"
             , function(err, result) {
                 if(err) {
                 next(err);
@@ -169,20 +175,24 @@ app.post('/login_validate', function(req, res, next) {
             context.typeError = true;
             context.loggedIn = getLoggedInState();
             res.render('login', context);
+        } else {
+            setLoggedInState(1);
+            context.loggedIn = getLoggedInState();
+            res.render('upload', context);
         }
-        else {
-            //otherwise set logged in state to true and render browse page
-            bcrypt.compare(req.body.password, context.results[0].password, function (err, result) {
-                if (result == true) {
-                    setLoggedInState(1);
-                    context.loggedIn = getLoggedInState();
-                    res.render('upload', context);
-                } else {
-                    res.send('Incorrect password');
-                    res.redirect('/');
-                }
-            });
-        }
+        // else {
+        //     //otherwise set logged in state to true and render browse page
+        //     bcrypt.compare(req.body.password, context.results[0].password, function (err, result) {
+        //         if (result == true) {
+        //             setLoggedInState(1);
+        //             context.loggedIn = getLoggedInState();
+        //             res.render('upload', context);
+        //         } else {
+        //             res.send('Incorrect password');
+        //             res.redirect('/');
+        //         }
+        //     });
+        //}
     });
 });
 
@@ -194,39 +204,50 @@ app.get('/sign_up', function(req, res, next) {
 
 app.post('/sign_up_results', function(req, res, next) {
     var context = {};
-    var saltRounds = 12;
+    // var saltRounds = 12;
 
-    if (req.body.type === "administrator") {
-        bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
-            data = {
-                first_name: req.body.firstName, last_name: req.body.lastName,
-                email: req.body.email, password: hash, type: "administrator"
-            };
-            pool.query('INSERT INTO users SET ?', data, function(err, result) {
-                if (err) {
-                    next(err);
-                    return;
-                }
-            });
-        });
-        setLoggedInState(1);
-        context.loggedIn = getLoggedInState();
-        res.render('sign_up_success', context);
-    } else if (req.body.type === "user") {
-        bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
-            data = {first_name: req.body.firstName, last_name: req.body.lastName,
-                email: req.body.email, password : hash, type : "user"};
-            pool.query('INSERT INTO users SET ?', data, function(err, result) {
-                if (err) {
-                    next(err);
-                    return;
-                }
-            });
-        });
-        setLoggedInState(1);
-        context.loggedIn = getLoggedInState();
-        res.render('sign_up_success_user', context);
-    }
+    // if (req.body.type === "administrator") {
+    //     bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
+    //         data = {
+    //             first_name: req.body.firstName, last_name: req.body.lastName,
+    //             email: req.body.email, password: hash, type: "administrator"
+    //         };
+    //         pool.query('INSERT INTO users SET ?', data, function(err, result) {
+    //             if (err) {
+    //                 next(err);
+    //                 return;
+    //             }
+    //         });
+    //     });
+    //     setLoggedInState(1);
+    //     context.loggedIn = getLoggedInState();
+    //     res.render('sign_up_success', context);
+    // } else if (req.body.type === "user") {
+    //     bcrypt.hash(req.body.pass_1, saltRounds, function (err, hash) {
+    //         data = {first_name: req.body.firstName, last_name: req.body.lastName,
+    //             email: req.body.email, password : hash, type : "user"};
+    //         pool.query('INSERT INTO users SET ?', data, function(err, result) {
+    //             if (err) {
+    //                 next(err);
+    //                 return;
+    //             }
+    //         });
+    //     });
+
+    data = {
+        first_name: req.body.firstName, last_name: req.body.lastName,
+        email: req.body.email, password: req.body.pass_1, type: req.body.type
+    };
+
+    pool.query('INSERT INTO users SET ?', data, function(err, result) {
+        if (err) {
+            next(err);
+            return;
+        }
+    });
+    setLoggedInState(1);
+    context.loggedIn = getLoggedInState();
+    res.render('sign_up_success_user', context);
 });
 
 app.get('/search', function(req, res, next) {
@@ -378,7 +399,6 @@ app.post('/upload_file', function(req, res, next) {
 });
 
 //upload pdf to files directory and then update the database accordingly
-//this is very hacky - we should update if we have time
 //right now, the pdf you upload needs to be in the format author_last_name.pdf and no authors can have the same last name
 app.post('/save_details', function(req, res, next) {
     //source: https://stackoverflow.com/questions/29985950/how-to-stop-upload-and-redirect-in-busboy-if-mime-type-is-invalid
