@@ -411,8 +411,15 @@ app.post('/review_papers', function(req, res, next){
             });     
         }
     }
-    console.log(data);
-    res.render('review_papers', context);
+    pool.query("SELECT * FROM papers WHERE approval_status = ? ORDER BY title ASC", ["notReviewed"], function(err, rows, fields) {
+        if (err) {
+            next(err);
+            return;
+        }
+        context.loggedIn = getLoggedInState();
+        context.rows = rows;
+        res.render('review_papers', context);
+    });
 });
 
 // catch 404 and forward to error handler
