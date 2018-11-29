@@ -3,6 +3,10 @@
         <h2>Upload Your Paper</h2>
 
         <form class="form-signin" action="/upload_file" method="post">
+            <div>
+                <input type="hidden" name="approvalStatus" value="notReviewed">
+            </div>
+
             <div class="form-label-group">
                 <input type="text" id="inputTitle" name="paperTitle" class="form-control" required autofocus>
                 <label for="inputTitle">Paper Title</label>

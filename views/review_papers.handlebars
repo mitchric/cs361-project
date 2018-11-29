@@ -1,1 +1,39 @@
-<h1>Review Papers</h1>
+<div class="container">
+    <div class="row">
+      <form method="POST" action="/review_papers">
+        <table class="table">
+            <thead class="table-success">
+                <th scope="col">Paper Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Publication Date</th>
+                <th scope="col">Field</th>
+                <th scope="col">Download</th>
+                <th scope="col">View</th>
+                <th scope="col">Approve</th>
+                <th scope="col">Reject</th>
+                <th scope="col">Awaiting Review</th>
+            </thead>
+            <tbody>
+                {{#each rows}}
+                    <tr>
+                        <td>{{this.title}}     
+                        <td>{{this.author_first}} {{this.author_last}}     
+                        <td>{{this.publication_date}}  
+                        <td>{{this.field}}    
+                        <td><a href={{this.link}} download="{{this.author_last}}.pdf"> Download </a></td>
+                        <td><a href={{this.link}} target="_blank"> View </a></td>
+                        <td><input type="radio" name="{{this.author_last}}" value="approved"></td>
+                        <td><input type="radio" name="{{this.author_last}}" value="notApproved"></td>
+                        <td><input type="radio" name="{{this.author_last}}" value="notReviewed" checked></td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    <div class="container">
+        <div class="row">
+            <button class="btn btn-lg btn-primary gap centered" type="submit">Update</button>
+        </div>
+    </div>
+      </form>
+    </div>
+</div>
