@@ -17,7 +17,8 @@ var pool = mysql.createPool({
      user  : 'cs361_mackeyl',
      password: '1259',
      database: 'cs361_mackeyl',
-     dateStrings: true
+     dateStrings: true,
+     multipleStatements: true
 });
 
 /*
@@ -313,7 +314,7 @@ app.post('/upload_file', function(req, res, next) {
         
     //add data to papers database
     var data = {title: req.body.paperTitle, author_first: req.body.firstName, author_last: req.body.lastName,
-        publication_date: req.body.publicationDate, field: req.body.field};
+        publication_date: req.body.publicationDate, field: req.body.field, approval_status: req.body.approvalStatus};
     pool.query('INSERT INTO papers SET ?', data, function(err, result) {
         if (err) {
             next(err);
@@ -357,7 +358,60 @@ app.post('/save_details', function(req, res, next) {
 
 app.get('/review_papers', function(req, res, next){
     var context = {};
-    context.loggedIn = getLoggedInState();
+    pool.query("SELECT * FROM papers WHERE approval_status = ? ORDER BY title ASC", ["notReviewed"], function(err, rows, fields) {
+        if (err) {
+            next(err);
+            return;
+        }
+        context.loggedIn = getLoggedInState();
+        context.rows = rows;
+        res.render('review_papers', context);
+    });
+});
+
+app.post('/review_papers', function(req, res, next){
+    var context = {};
+    var status_values = JSON.stringify(req.body);
+    var open = false;
+    var count = 0;
+    var str = "";
+    var values = [];
+    var data = [];
+    for (var i = 0; i < status_values.length; i++) {
+        if (!open && status_values.charAt(i) === "\"") {
+            open = true;
+            str = "";
+            continue;
+        } else if (open && status_values.charAt(i) === "\"") {
+            open = false;
+            ++count;
+            values.push(str);
+            if (count === 2) {
+                data.push(values);
+                values = [];
+                count = 0;
+            }
+            continue;
+        }
+        str += status_values.charAt(i);
+    }
+    for (var i = 0; i < data.length; ++i) {
+        pool.query('UPDATE papers SET approval_status = ? WHERE author_last = ?', [data[i][1], data[i][0]], function(err, result) {
+            if (err) {
+                next(err);
+                return;
+            }
+        });
+        if (data[i][1] === "notApproved") {
+            pool.query('DELETE FROM papers WHERE author_last = ?', [data[i][0]], function(err, result) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+            });     
+        }
+    }
+    console.log(data);
     res.render('review_papers', context);
 });
 
