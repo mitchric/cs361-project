@@ -12,16 +12,15 @@ var app = express();
 //mysql setup 
 var mysql = require('mysql');
 
-var pool = mysql.createPool({
-     host  : 'classmysql.engr.oregonstate.edu',
-     user  : 'cs361_mackeyl',
-     password: '1259',
-     database: 'cs361_mackeyl',
-     dateStrings: true,
-     multipleStatements: true
-});
+// var pool = mysql.createPool({
+//      host  : 'classmysql.engr.oregonstate.edu',
+//      user  : 'cs361_mackeyl',
+//      password: '1259',
+//      database: 'cs361_mackeyl',
+//      dateStrings: true,
+//      multipleStatements: true
+// });
 
-/*
 var pool = mysql.createPool({
     host  : 'us-cdbr-iron-east-01.cleardb.net',
     user  : 'beed262413bedf',
@@ -29,7 +28,6 @@ var pool = mysql.createPool({
     database: 'heroku_30a53d52f9d4d23',
     dateStrings: true
 });
-*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -54,6 +52,13 @@ function setLoggedInState(state) {
 
 function getLoggedInState() {
     return loggedInState;
+}
+
+function checkAnd(num_parameters) {
+    if (num_parameters > 0) {
+        return 1;
+    }
+    return 0;
 }
 
 //create all page routes
@@ -233,11 +238,60 @@ app.get('/search', function(req, res, next) {
 app.post('/search_results', function(req, res, next) {
     var context = {};
 
-    //get relevant papers to display based on search term
-    pool.query("SELECT * FROM papers WHERE title = ? OR author_first = ? OR author_last = ? OR \
-                YEAR(publication_date) = ? OR field = ? ORDER BY title ASC", 
-                [req.body.paperTitle, req.body.firstName, req.body.lastName, req.body.publicationYear, req.body.field]
-                , function(err, rows, fields) {
+    var statement = "SELECT * FROM papers WHERE";
+    var parameters = [];
+    var num_parameters = 0;
+
+    if (req.body.paperTitle) {
+        statement += " title = ?";
+        parameters.push(req.body.paperTitle);
+        num_parameters++;
+    }
+
+    if (req.body.firstName) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND author_first = ?";    
+        } else {
+            statement += " author_first = ?";
+        }        
+        parameters.push(req.body.firstName);
+        num_parameters++;
+    }
+
+    if (req.body.lastName) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND author_last = ?";    
+        } else {
+            statement += " author_last = ?";
+        }        
+        parameters.push(req.body.lastName);
+        num_parameters++;
+    }
+
+    if (req.body.publicationYear) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND YEAR(publication_date) = ?";    
+        } else {
+            statement += " YEAR(publication_date) = ?";
+        }        
+        parameters.push(req.body.publicationYear);
+        num_parameters++;
+    }
+    
+    if (req.body.field) {
+        if (checkAnd(num_parameters)) {
+            statement += " AND field = ?";    
+        } else {
+            statement += " field = ?";
+        }        
+        parameters.push(req.body.field);
+        num_parameters++;
+    }
+
+
+    statement += " ORDER BY title asc";
+
+    pool.query(statement, parameters, function(err, rows, fields) {
         if (err) {
             next(err);
             return;
@@ -249,10 +303,8 @@ app.post('/search_results', function(req, res, next) {
             res.render('search_results', context);        
         }
         else{
-
             res.render('no_results', context);
         }
-
     });
 });
 
