@@ -465,16 +465,8 @@ app.post('/review_papers', function(req, res, next){
             });     
         }
     }
-    // Render review page with research papers that are still pending for review
-    pool.query("SELECT * FROM papers WHERE approval_status = ? ORDER BY title ASC", ["notReviewed"], function(err, rows, fields) {
-        if (err) {
-            next(err);
-            return;
-        }
-        context.loggedIn = getLoggedInState();
-        context.rows = rows;
-        res.render('review_papers', context);
-    });
+    context.loggedIn = getLoggedInState();
+    res.render('welcome', context);
 });
 
 // catch 404 and forward to error handler
