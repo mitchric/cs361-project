@@ -1,5 +1,6 @@
 <div class="container">
     <div class="row">
+      <form method="POST" action="/review_papers">
         <table class="table">
             <thead class="table-success">
                 <th scope="col">Paper Title</th>
@@ -21,14 +22,18 @@
                         <td>{{this.field}}    
                         <td><a href={{this.link}} download="{{this.author_last}}.pdf"> Download </a></td>
                         <td><a href={{this.link}} target="_blank"> View </a></td>
-                        <td><input type="radio" name="approvalStatus" value="approved"></td>
-                        <td><input type="radio" name="approvalStatus" value="notApproved"></td>
-                        <td><input type="radio" name="reviewStatus" value="notReviewed" checked></td>
-                        <td><input type="hidden" name="paperTitle" value="notApproved"></td
+                        <td><input type="radio" name="{{this.author_last}}" value="approved"></td>
+                        <td><input type="radio" name="{{this.author_last}}" value="notApproved"></td>
+                        <td><input type="radio" name="{{this.author_last}}" value="notReviewed" checked></td>
                     </tr>
                 {{/each}}
             </tbody>
         </table>
-        <a href="/browse" class="btn btn-primary gap centered">Back to Browse</a>
+    <div class="container">
+        <div class="row">
+            <button class="btn btn-lg btn-primary gap centered" type="submit">Update</button>
+        </div>
+    </div>
+      </form>
     </div>
 </div>
