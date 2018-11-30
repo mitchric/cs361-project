@@ -1,5 +1,7 @@
 # CS 361: Group 13 Project
 
+Must have latest version of Node.js to run (at least version 10.x).
+
 ## Setup
 Run:
 ```
