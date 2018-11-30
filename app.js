@@ -12,15 +12,16 @@ var app = express();
 //mysql setup 
 var mysql = require('mysql');
 
-// var pool = mysql.createPool({
-//      host  : 'classmysql.engr.oregonstate.edu',
-//      user  : 'cs361_mackeyl',
-//      password: '1259',
-//      database: 'cs361_mackeyl',
-//      dateStrings: true,
-//      multipleStatements: true
-// });
+var pool = mysql.createPool({
+      host  : 'classmysql.engr.oregonstate.edu',
+      user  : 'cs361_mackeyl',
+      password: '1259',
+      database: 'cs361_mackeyl',
+      dateStrings: true,
+      multipleStatements: true
+});
 
+/*
 var pool = mysql.createPool({
     host  : 'us-cdbr-iron-east-01.cleardb.net',
     user  : 'beed262413bedf',
@@ -29,6 +30,7 @@ var pool = mysql.createPool({
     dateStrings: true,
     multipleStatements: true
 });
+*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
