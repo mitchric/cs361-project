@@ -12,6 +12,7 @@ var app = express();
 //mysql setup 
 var mysql = require('mysql');
 
+/*
 var pool = mysql.createPool({
       host  : 'classmysql.engr.oregonstate.edu',
       user  : 'cs361_mackeyl',
@@ -20,8 +21,8 @@ var pool = mysql.createPool({
       dateStrings: true,
       multipleStatements: true
 });
+*/
 
-/*
 var pool = mysql.createPool({
     host  : 'us-cdbr-iron-east-01.cleardb.net',
     user  : 'beed262413bedf',
@@ -30,7 +31,6 @@ var pool = mysql.createPool({
     dateStrings: true,
     multipleStatements: true
 });
-*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -44,7 +44,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-app.set('port', process.argv[2]);
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
+app.set('port', port);
 
 //global variable to denote either logged-in or logged-out state
 var loggedInState = 0;
