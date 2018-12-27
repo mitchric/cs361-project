@@ -1,5 +1,8 @@
 {
   "name": "cs361-project",
+  "engines": {
+    "node": "10.13.0"
+    },
   "version": "0.0.0",
   "private": true,
   "scripts": {
