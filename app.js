@@ -12,17 +12,6 @@ var app = express();
 //mysql setup 
 var mysql = require('mysql');
 
-/*
-var pool = mysql.createPool({
-      host  : 'classmysql.engr.oregonstate.edu',
-      user  : 'cs361_mackeyl',
-      password: '1259',
-      database: 'cs361_mackeyl',
-      dateStrings: true,
-      multipleStatements: true
-});
-*/
-
 var pool = mysql.createPool({
     host  : 'us-cdbr-iron-east-01.cleardb.net',
     user  : 'bd7fd678faff1a',
